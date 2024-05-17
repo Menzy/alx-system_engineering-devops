@@ -19,8 +19,8 @@ sudo apt-get install -y haproxy=2.8.\*
 #         balance roundrobin
 
 #     backend servers
-#         server 252133-web-01 34.232.68.72:80 check
-#         server 252133-web-02 52.90.13.69:80 check
+#         server 252133-web-01 100.24.238.31:80 check
+#         server 252133-web-02 18.206.202.49:80 check
 # EOF
 # fi
 
@@ -37,7 +37,7 @@ fi
 if ! grep -q "balance roundrobin" /etc/haproxy/haproxy.cfg; then
     echo "balance roundrobin" >> /etc/haproxy/haproxy.cfg
 fi
-if ! grep -q "server 251024-web-01 	100.24.238.31:80 check" /etc/haproxy/haproxy.cfg; then
+if ! grep -q "server 251024-web-01 100.24.238.31:80 check" /etc/haproxy/haproxy.cfg; then
     echo "server 251024-web-01 100.24.238.31:80 check" >> /etc/haproxy/haproxy.cfg
 fi
 if ! grep -q "server 251024-web-02 18.206.202.49:80 check" /etc/haproxy/haproxy.cfg; then
