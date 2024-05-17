@@ -12,7 +12,7 @@ get_subdomain_info() {
 
   # Check if record exists
   if [[ -z "$record" ]]; then
-    echo "Subdomain $subdomain does not have a record for $domain"
+    echo "The subdomain $subdomain does not have a record for $domain"
     return 1
   fi
 
