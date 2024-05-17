@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Function to retrieve and display DNS information for a subdomain
-function get_subdomain_info {
+get_subdomain_info() {
     local domain=$1
     local subdomain=$2
 
