@@ -1,32 +1,42 @@
 #!/bin/bash
-# Script to display DNS information about subdomains
 
+# Function to retrieve and display DNS information for a subdomain
+function get_subdomain_info {
+    local domain=$1
+    local subdomain=$2
+
+    # Use dig to get DNS record
+    record=$(dig +short "$subdomain.$domain")
+    if [ -z "$record" ]; then
+        echo "No record found for $subdomain.$domain"
+        return
+    fi
+
+    # Determine the record type (assuming A record for simplicity)
+    record_type="A"
+
+    # Output the information
+    echo "The subdomain $subdomain is a $record_type record and points to $record"
+}
+
+# Main script logic
 domain=$1
 subdomain=$2
 
-get_subdomain_info() {
-    local sub=$1
-    local full_domain="${sub}.${domain}"
-    local result=$(dig +short $full_domain)
-
-    if [ -z "$result" ]; then
-        echo "The subdomain $sub does not have a DNS record."
-    else
-        local record_type="A"
-        echo "The subdomain $sub is a $record_type record and points to $result"
-    fi
-}
-
 if [ -z "$domain" ]; then
-    echo "Usage: $0 domain [subdomain]"
+    echo "Usage: $0 <domain> [subdomain]"
     exit 1
 fi
 
-if [ -z "$subdomain" ]; then
-    subdomains=("www" "lb-01" "web-01" "web-02")
-    for sub in "${subdomains[@]}"; do
-        get_subdomain_info $sub
-    done
+# List of default subdomains
+default_subdomains=("www" "lb-01" "web-01" "web-02")
+
+if [ -n "$subdomain" ]; then
+    # If a specific subdomain is provided, get its info
+    get_subdomain_info "$domain" "$subdomain"
 else
-    get_subdomain_info $subdomain
+    # If no specific subdomain, get info for all default subdomains
+    for sub in "${default_subdomains[@]}"; do
+        get_subdomain_info "$domain" "$sub"
+    done
 fi
