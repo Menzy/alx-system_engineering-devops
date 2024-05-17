@@ -15,7 +15,7 @@ get_subdomain_info() {
     # Determine the record type (assuming A record for simplicity)
     record_type="A"
 
-    # Output the information
+    # Output the information without extra newlines
     echo "The subdomain $subdomain is a $record_type record and points to $record"
 }
 
