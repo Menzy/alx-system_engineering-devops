@@ -1,23 +1,60 @@
-#!/usr/bin/env bash
-# Install and configure HAproxy on lb-01 server.
+#!/bin/bash
 
-# Update package lists and install HAProxy
-sudo apt-get -y update
-sudo apt-get -y install haproxy
+# Update and install HAProxy
+sudo apt update
+sudo apt install -y haproxy
 
+# Configure HAProxy
+sudo tee /etc/haproxy/haproxy.cfg > /dev/null <<EOL
+global
+    log /dev/log    local0
+    log /dev/log    local1 notice
+    chroot /var/lib/haproxy
+    stats socket /run/haproxy/admin.sock mode 660 level admin
+    stats timeout 30s
+    user haproxy
+    group haproxy
+    daemon
 
-# Define new HAProxy configuration
-server_config=\
-"
-frontend my_frontend
+defaults
+    log     global
+    option  httplog
+    option  dontlognull
+    timeout connect 5000
+    timeout client  50000
+    timeout server  50000
+    errorfile 400 /etc/haproxy/errors/400.http
+    errorfile 403 /etc/haproxy/errors/403.http
+    errorfile 408 /etc/haproxy/errors/408.http
+    errorfile 500 /etc/haproxy/errors/500.http
+    errorfile 502 /etc/haproxy/errors/502.http
+    errorfile 503 /etc/haproxy/errors/503.http
+    errorfile 504 /etc/haproxy/errors/504.http
+
+frontend http_in
     bind *:80
-    mode http
-    default_backend my_backend
+    default_backend servers
 
-backend my_backend
+backend servers
     balance roundrobin
-    server 284492-web-01 100.25.102.62:80 check
-    server 284492-web-02 52.87.24.245:80 check
-"
+    option httpchk
+    server web-01 100.24.238.31:80 check
+    server web-02 18.206.202.49:80 check
 
-# Append the new configuration to HAProxy configuration
+listen stats
+    bind *:8404
+    stats enable
+    stats uri /stats
+    stats hide-version
+    stats auth admin:password
+EOL
+
+# Restart HAProxy to apply changes
+sudo systemctl restart haproxy
+sudo systemctl enable haproxy
+
+# Allow incoming traffic on port 80 and 8404
+sudo ufw allow 80/tcp
+sudo ufw allow 8404/tcp
+
+echo "HAProxy installed and configured successfully."
