@@ -1,80 +1,42 @@
-# #!/usr/bin/env bash
-# # script that will display information about subdomains.
+#!/usr/bin/env bash
+# script that will display information about subdomains.
 
-# # Function to process subdomain information
-# get_subdomain_info() {
-#   local domain="$1"
-#   local subdomain="$2"
+# Function to process subdomain information
+get_subdomain_info() {
+  local domain="$1"
+  local subdomain="$2"
   
-#   # Use dig to get DNS record information
-#   record=$(dig +short "$subdomain.$domain" A | head -n 1)
-#   record_type="A"
+  # Use dig to get DNS record information
+  record=$(dig +short "$subdomain.$domain" A | head -n 1)
+  record_type="A"
 
-#   # Check if record exists
-#   if [[ -z "$record" ]]; then
-#     echo "The subdomain $subdomain is a $record_type record and points to"
-#     return 1
-#   fi
+  # Check if record exists
+  if [[ -z "$record" ]]; then
+    echo "The subdomain $subdomain is a $record_type record and points to"
+    return 1
+  fi
 
-#   # Display information
-#   echo "The subdomain $subdomain is a $record_type record and points to $record"
-# }
-
-# # Check arguments
-# if [[ -z "$1" ]]; then
-#   echo "Error: Domain name is required!"
-#   exit 1
-# fi
-
-# domain="$1"
-# subdomain="${2:-}"  # Set subdomain to empty if not provided
-
-# # Check if only domain is provided
-# if [[ -z "$subdomain" ]]; then
-#   # Display information for specific subdomains
-#   get_subdomain_info "$domain" "www"
-#   get_subdomain_info "$domain" "lb-01"
-#   get_subdomain_info "$domain" "web-01"
-#   get_subdomain_info "$domain" "web-02"
-# else
-#   # Display information for the provided subdomain
-#   get_subdomain_info "$domain" "$subdomain"
-# fi
-
-#!/bin/bash
-
-# Function to display DNS information for a specific subdomain
-display_dns_info() {
-    subdomain=$1
-    domain=$2
-
-    # Retrieve DNS information using dig and filter the output
-    dig_output=$(dig $subdomain.$domain | awk '/^;; ANSWER SECTION:$/,/^$/' | awk 'NR>1')
-
-    # Extract record type and destination IP
-    record_type=$(echo "$dig_output" | awk '{print $4}')
-    destination=$(echo "$dig_output" | awk '{print $5}')
-
-    # Display the result
-    echo "The subdomain $subdomain is a $record_type record and points to $destination"
+  # Display information
+  echo "The subdomain $subdomain is a $record_type record and points to $record"
 }
 
-# Main function
-main() {
-    domain=$1
-    subdomain=$2
+# Check arguments
+if [[ -z "$1" ]]; then
+  echo "Error: Domain name is required!"
+  exit 1
+fi
 
-    # If subdomain is not provided, display information for default subdomains
-    if [ -z "$subdomain" ]; then
-        subdomains=("www" "lb-01" "web-01" "web-02")
-        for sub in "${subdomains[@]}"; do
-            display_dns_info "$sub" "$domain"
-        done
-    else
-        # Display information for the specified subdomain
-        display_dns_info "$subdomain" "$domain"
-    fi
-}
+domain="$1"
+subdomain="${2:-}"  # Set subdomain to empty if not provided
 
-# Execute main function with provided arguments
-main "$@"
+# Check if only domain is provided
+if [[ -z "$subdomain" ]]; then
+  # Display information for specific subdomains
+  get_subdomain_info "$domain" "www"
+  get_subdomain_info "$domain" "lb-01"
+  get_subdomain_info "$domain" "web-01"
+  get_subdomain_info "$domain" "web-02"
+else
+  # Display information for the provided subdomain
+  get_subdomain_info "$domain" "$subdomain"
+fi
