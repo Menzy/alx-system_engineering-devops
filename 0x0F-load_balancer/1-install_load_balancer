@@ -4,6 +4,10 @@
 sudo apt update
 sudo apt install -y haproxy
 
+# Set the hostname for web-01 and web-02
+sudo hostnamectl set-hostname 251024-web-01
+sudo hostnamectl set-hostname 251024-web-02
+
 # Configure HAProxy
 sudo tee /etc/haproxy/haproxy.cfg > /dev/null <<EOL
 global
