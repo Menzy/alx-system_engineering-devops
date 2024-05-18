@@ -61,4 +61,7 @@ sudo systemctl enable haproxy
 sudo ufw allow 80/tcp
 sudo ufw allow 8404/tcp
 
+# Output the configured hostnames
+echo "web-01"
+echo "web-02"
 echo "HAProxy installed and configured successfully."
